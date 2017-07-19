@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!--<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">-->
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>GO</title>
+		<link rel="stylesheet" href="css/bootstrap.css" />
+		<link rel="stylesheet" href="css/bootstrapSwitch.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/demo.css" />
+	</head>
+	<body ng-app="demo" ng-controller="demoCon" class="onloadHide">
+		<div class="col-lg-3 heigCon"></div>
+		<div class="col-lg-6 heigCon relative">
+			<div class="forecast" id="forecast" ng-style="forecast.css" ng-show="forecast.active">
+				<div class="title" ng-mousedown="move($event)">
+					<div class="closeCom heightest pull-right" ng-click="forecast.active=!forecast.active">
+						<img src="img/p10.png" class="heightest" alt="" />
+					</div>
+				</div>
+				<div class="body">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Move</th>
+								<th>Effort(%)</th>
+								<th>Simulations</th>
+								<th>Win(%)</th>
+								<th>MC Win(%)</th>
+								<th>Net Win(%)</th>
+								<th>Net Prob(%)</th>
+								<th>PV</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="v in analyze.policy">
+								<td ng-bind="v.coor.x+v.coor.y"></td>
+								<td class="noneData"></td>
+								<td class="noneData"></td>
+								<td class="noneData"></td>
+								<td class="noneData"></td>
+								<td class="noneData"></td>
+								<td ng-bind="(v.val*100).toFixed(2)"></td>
+								<td class="forData" ng-bind="v.pv"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3"></div>
+		<div class="container">
+			<div class="col-lg-1 col-md-1 clearpadding">
+				<div class="col-sm-12 col-xs-12 phone options clearpadding" ng-show="screenWidth<=screenBP">
+					<div class="navArea">
+						<div class="item navMark" data-mark="navMark" ng-click="menuCon()" ng-hide="resultCss.optionCss">
+							<div class="label1" ng-style="lab1Css"></div>
+							<div class="label2" ng-hide="menu.active"></div>
+							<div class="label3" ng-style="lab2Css"></div>
+						</div>
+						<div class="countResult" ng-click="returnMain()" ng-show="resultCss.optionCss">
+							<img src="img/p7.png" class="widthest" alt="" />
+						</div>
+					</div>
+					<div class="navCon phone">
+						<ul class="nav_content navMark" data-mark="navMark" ng-class="{true:'active'}[menu.active]" ng-style="menu.css">
+							<li class="item" ng-click="countResult()">点目</li>
+							<li class="item" ng-click="openAnalyze()">分析</li>
+							<li class="item">
+								<span class="pull-left">Policy</span>
+								<span class="pull-right">
+									<input type="checkbox" data-radio="graph" data-toggle="switch" name="policy" />
+								</span>
+							</li>
+							<li class="item">
+								<span class="pull-left">Number</span>
+								<span class="pull-right">
+									<input type="checkbox" data-toggle="switch" name="step" />
+								</span>
+							</li>
+							<li class="item">
+								<span class="pull-left">Area</span>
+								<span class="pull-right">
+									<input type="checkbox" data-radio="graph" data-toggle="switch" name="Territory" />
+								</span>
+							</li>
+							<li class="item">
+								<span class="pull-left">Following Steps</span>
+								<span class="pull-right">
+									<input type="checkbox" data-radio="graph" data-toggle="switch" name="nextSteps" />
+								</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="phone relative" ng-style="phoneCss" ng-if="screenWidth<=screenBP">
+					<div class="defaultPanel" ng-style="resultCss.optionCss" ng-show="resultCss.contentCss">
+						<div class="userData">
+							<div class="col-sm-6 col-xs-6 clearpadding">
+								<h3 class="title">
+									<div class="pull-left piecesB"></div>
+									<div class="inline_block">
+										<span class="pull-right" ng-if="(!computer||computer==2)&&!userSe.selfGame">Player</span>
+										<span class="pull-right" ng-if="computer==1||userSe.selfGame">Computer</span>
+									</div>
+								</h3>
+								<div class="col-sm-6 col-xs-6 item clearpadding">
+									<div class="in">
+										<li>Caps</li>
+										<li ng-bind="gameInfo.death1"></li>
+									</div>
+								</div>
+								<div class="col-sm-6 col-xs-6 item">
+									<div class="in">
+										<div>Time</div>
+										<div ng-bind="time.c1.show"></div>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6 col-xs-6 clearpadding">
+								<h3 class="title">
+									<div class="pull-left piecesW"></div>
+									<div class="inline_block">
+										<span class="pull-right" ng-if="(!computer||computer==1)&&!userSe.selfGame">Player</span>
+										<span class="pull-right" ng-if="computer==2||userSe.selfGame">Computer</span>
+									</div>
+								</h3>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 item">
+									<div class="in">
+										<div>Caps</div>
+										<div ng-bind="gameInfo.death2"></div>
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 item">
+									<div class="in">
+										<div>Time</div>
+										<div ng-bind="time.c2.show">--:--</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="funBtn">
+							<div class="changePie col-sm-4 col-xs-4">
+								<button class="btn btn-default" ng-click="changeGame()">Change</button>
+							</div>
+							<div class="col-sm-4 col-xs-4">
+								<button class="btn btn-danger pass" ng-click="Play(null)">
+									PASS
+								</button>
+							</div>
+							<div class="newPie col-sm-4 col-xs-4">
+								<button class="btn btn-default" ng-click="newGame()">New</button>
+							</div>
+						</div>
+					</div>
+					<div class="gameInfo" ng-style="resultCss.contentCss" ng-show="resultCss.optionCss">
+						<div class="txt">
+							<div class="publicTxt">
+								<div class="col-sm-4 col-xs-4 clearpadding">公气：<span ng-bind="gameInfo.publicNum"></span></div>
+								<div class="col-sm-8 col-xs-8 clearpadding">
+									<div class="col-sm-3 col-xs-3 clearpadding">贴目：</div>
+									<div class="col-sm-9 col-xs-9 clearpadding">
+										<div class="infoDis" ng-hide="handi.active">
+											<span ng-bind="handi.num"></span>
+											<span class="text-primary modifyBtn" ng-click="modifyHandi()">修改</span>
+											<span class="notice text-muted">(中国规则)</span>
+										</div>
+										<div class="infoDis" ng-hide="handi.active">
+											<span>6.5</span>
+											<span class="text-primary modifyBtn" style="visibility:hidden;">修改</span>
+											<span class="notice text-muted">(日本规则)</span>
+										</div>
+										<div class="handiModify" ng-show="handi.active">
+											<input id="handiInput" ng-blur="handiEffect(true)" type="number" class="form-control" style="height:20px;" ng-model="handi.num" />
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="infoVess">
+								<div class="blackInfo col-sm-6 col-xs-6">
+									<h4 class="item_title">黑方：</h4>
+									<ul class="info">
+										<li>子数：<span ng-bind="gameInfo.color1"></span></li>
+										<li>占领气：<span ng-bind="gameInfo.area1"></span></li>
+										<li>死子：<span ng-bind="gameInfo.death1"></span></li>
+										<li>总共：<span ng-bind="gameInfo.color1+gameInfo.area1+gameInfo.publicNum/2"></span></li>
+									</ul>
+								</div>
+								<div class="whiteInfo col-sm-6 col-xs-6">
+									<h4 class="item_title">白方：</h4>
+									<ul class="info">
+										<li>子数：<span ng-bind="gameInfo.color2"></span></li>
+										<li>占领气：<span ng-bind="gameInfo.area2"></span></li>
+										<li>死子：<span ng-bind="gameInfo.death2"></span></li>
+										<li>总共：<span ng-bind="gameInfo.color2+gameInfo.area2+gameInfo.publicNum/2"></span></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="result">
+							<div class="ChineseRule col-sm-6 col-xs-6">
+								<h4>中国规则：</h4>
+								<div class="whiteWin" ng-if="gameInfo.result.Chinese.wWin+(handi.num/2)>0">
+									白胜：<span ng-bind="gameInfo.result.Chinese.wWin+(handi.num/2)"></span>子
+								</div>
+								<div class="blackWin" ng-if="gameInfo.result.Chinese.bWin-(handi.num/2)>0">
+									黑胜：<span ng-bind="gameInfo.result.Chinese.bWin-(handi.num/2)"></span>子
+								</div>
+								<div ng-if="gameInfo.result.Chinese.bWin-(handi.num/2)==0">平局</div>
+							</div>
+							<div class="JapaneseRule col-sm-6 col-xs-6">
+								<h4>日本规则：</h4>
+								<div class="whiteWin" ng-if="gameInfo.result.Japanese.wWin>=0">
+									白胜：<span ng-bind="gameInfo.result.Japanese.wWin"></span>目
+								</div>
+								<div class="blackWin" ng-if="gameInfo.result.Japanese.bWin>0">
+									黑胜：<span ng-bind="gameInfo.result.Japanese.bWin"></span>目
+								</div>
+								<div ng-if="gameInfo.result.Japanese.bWin==0">平局</div>
+							</div>
+						</div>
+						<div class="resultIntro hidden">
+							<p class="text-primary">请点击左侧棋盘内要去掉的死子，右侧数据会同步更新</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-11 col-md-11 content mainCon inline_block widthest">
+				<div class="col-lg-8 boardBody" id="boardBody">
+					<div class="insdeBoard">
+					<canvas id="board" class="board"
+						 width="{{boardAttr.boardSize}}" 
+						 height="{{boardAttr.boardSize}}"
+						 ></canvas>
+					<canvas id="board2" class="board2"
+						width="{{boardAttr.boardSize}}" 
+						height="{{boardAttr.boardSize}}"
+						></canvas>
+					<div class="pieces" 
+						ng-repeat="(k,v) in pieces"
+						style="top:{{(v.css.top*per+(v.ret*mdCon)).toFixed(2)}}px;left:{{(v.css.left*per+(v.rel*mdCon)).toFixed(2)}}px;width:{{(v.css.width*per).toFixed(2)}}px;height:{{(v.css.height*per).toFixed(2)}}px;"
+						ts="{{v.ret}}" tt="{{mdCon}}"
+						>
+						<div class="pie piecesSizeCon"
+							ng-mouseover="piecesMouseOver(v.x,v.y)"
+							ng-mouseleave="piecesMouseLeave(v.x,v.y)"
+							ng-class="{1:'blackPlaier',2:'whitePlaier'}[v.pieces]"
+							ng-click="Play(v.x,v.y,k)"
+							style="opacity:{{v.css.opacity}}"></div>
+						<div class="Territory" ng-show="v.territory" 
+							ng-mouseover="territoryHover(v.x,v.y,$event)" 
+							ng-mouseleave="territoryLeave(v.x,v.y)"
+							data-toggle="tooltip" title="{{v.territory.val}}%"
+							style="background:{{v.territory.css.background}};line-height:{{(v.css.height*per).toFixed(2)}}px;">
+							<span class="txt" ng-bind="v.territory.val+'%'" ng-class="{1:'activeB',2:'activeW'}[v.territory.active]"></span>
+						</div>
+						<div class="nextSteps piecesSizeCon"
+							ng-show="v.nextSteps"
+							ng-class="{1:'blackPlaier',2:'whitePlaier'}[v.nextSteps.c]"
+							style="line-height:{{(v.css.height*per).toFixed(2)}}px;"
+							ng-bind="v.nextSteps.k"
+							></div>
+						<div class="progressBar piecesSizeCon"
+							ng-click="Play(v.x,v.y,k)"
+							ng-mouseover="progressHover(v.x,v.y,$event)" 
+							ng-mouseleave="progressLeave(v.x,v.y)"
+							data-toggle="tooltip" title="{{v.policy.num}}%"
+							ng-show="v.policy&&v.policy.show" style="line-height:{{v.css.width*per}}px;">
+							<div class="item left hidden">
+								<div class="bar" style="transform:rotate({{v.policy.Lcss}}deg);"></div>
+							</div>
+							<div class="item right hidden">
+								<div class="bar" style="transform:rotate({{v.policy.Rcss}}deg);"></div>
+							</div>
+							<div class="bcg" style="background:rgba(58,48,184,{{v.policy.bcg}})" >
+								<span class="txt" ng-class="{true:'active'}[v.policy.active]" ng-bind="v.policy.num"></span>
+							</div>
+						</div>
+							<div class="lastestP" ng-hide="showStep||rectifyOpen" ng-class="{true:'active','1':'selected'}[v.active]"></div>
+							<div class="stepShow" ng-show="showStep&&v.status==1" 
+								style="line-height:{{v.css.height*per}}px;color:{{v.active?'#f83838':(v.pieces==1?'#fff':'#333')}}" 
+								ng-bind="v.step"></div>
+							<div class="rectify" ng-click="rectify(v.x,v.y)" ng-show="rectifyOpen" ng-class="{4:'active'}[v.status]"></div>	
+						</div>
+					</div>	
+				</div>
+				<div class="phone stepPlay" ng-if="screenWidth<=screenBP" ng-show="resultCss.contentCss">
+					<div class="boardController" ng-hide="computer||userSe.selfGame">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+							<button class="btn btn-default">
+								<img src="img/p1.png" title="第一手" class="widthest" ng-click="boardCon(0)" />
+							</button>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+							<button class="btn btn-default">
+								<img src="img/p2.png" title="后退4手" class="widthest" ng-click="boardCon(positionNow-4)" />
+							</button>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+							<button class="btn btn-default">
+								<img src="img/p3.png" title="上一手" class="widthest" ng-click="boardCon(positionNow-1)" />
+							</button>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+							<button class="btn btn-default">
+								<img src="img/p4.png" title="下一手" class="widthest" ng-click="boardCon(positionNow+1)" />
+							</button>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+							<button class="btn btn-default">
+								<img src="img/p5.png" title="前进4手" class="widthest" ng-click="boardCon(positionNow+4)" />
+							</button>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+							<button class="btn btn-default">
+								<img src="img/p6.png" title="最后一手" class="widthest" ng-click="boardCon(cache.length-1)" />
+							</button>
+						</div>
+						<div class="goStep form-inline col-lg-12 col-md-12">
+							<input type="number" ng-model="goStep" class="form-control" />
+							<button class="btn btn-default" ng-click="boardCon(goStep-1)">GO</button>
+						</div>
+					</div>
+					<div class="undo" ng-show="computer&&!userSe.selfGame">
+						<div class="col-lg-4 col-md-4 col-sm-5 col-xs-5"></div>
+						<div class="col-lg-4 col-md-4 col-sm-2 col-xs-2 clearpadding">
+							<button class="btn btn-danger" ng-click="undo()">
+								<img src="img/p11.png" class="widthest" alt="" />
+							</button>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-5 col-xs-5"></div>
+					</div>
+				</div>
+				<div class="col-lg-4 options" ng-show="screenWidth>screenBP" style="height:{{boardHeight}}px;">
+					<div class="optBody">
+						<div class="navArea">
+							<div class="item navMark" data-mark="navMark" ng-click="menuCon()" ng-hide="resultCss.optionCss">
+								<div class="label1" ng-style="lab1Css"></div>
+								<div class="label2" ng-hide="menu.active"></div>
+								<div class="label3" ng-style="lab2Css"></div>
+							</div>
+							<div class="countResult" ng-click="returnMain()" ng-show="resultCss.optionCss">
+								<img src="img/p7.png" class="widthest" />
+							</div>
+						</div>
+						<div class="navCon">
+							<ul class="nav_content navMark" data-mark="navMark" ng-class="{true:'active'}[menu.active]" ng-style="menu.css">
+								<li class="item" ng-click="countResult()">点目</li>
+								<li class="item" ng-click="openAnalyze()">分析</li>
+								<li class="item" ng-click="situationSea()">对局研究</li>
+							</ul>
+						</div>
+						<div class="interContent" ng-style="resultCss.optionCss" ng-show="resultCss.contentCss">
+							<div class="BInfo info relative text_center">
+								<h3 class="title">
+									<div class="pull-left piecesB"></div>
+									<span class="pull-right" ng-if="(!computer||computer==2)&&!userSe.selfGame">Player</span>
+									<span class="pull-right" ng-if="computer==1||userSe.selfGame">Computer</span>
+								</h3>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 item">
+									<div class="word">
+										<div>Caps</div>
+										<div ng-bind="gameInfo.death1"></div>
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 item">
+									<div class="word">
+										<div>Time</div>
+										<div ng-bind="time.c1.show"></div>
+									</div>
+								</div>
+							</div>
+							<div class="WInfo info">
+								<h3 class="title">
+									<div class="pull-left piecesW"></div>
+									<span class="pull-right" ng-if="(!computer||computer==1)&&!userSe.selfGame">Player</span>
+									<span class="pull-right" ng-if="computer==2||userSe.selfGame">Computer</span>
+								</h3>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 item">
+									<div class="word">
+										<div>Caps</div>
+										<div ng-bind="gameInfo.death2"></div>
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 item">
+									<div class="word">
+										<div>Time</div>
+										<div ng-bind="time.c2.show">--:--</div>
+									</div>
+								</div>
+							</div>
+							<div class="optionBtn">
+								<div class="startPlay">
+									<button class="btn btn-default" ng-click="newGame()">NEW</button>
+								</div>
+								<div class="options_item">
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+										<button class="btn btn-default" onclick="loadSgf.click()">SGF</button>
+										<input type="file" id="loadSgf" onchange="angular.element(this).scope().loadSgf(this)" class="hidden" />
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+										<button class="btn btn-default" ng-click="changeGame()">Change</button>
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+										<button class="btn btn-danger pass clearpadding" ng-click="Play(null)">
+											<img src="img/p9.png" class="heightest" />
+										</button>
+									</div>
+								</div>
+							</div>
+							<div class="optionPro">
+								<h3 class="title">Probability</h3>
+								<ul class="switches">
+									<li>
+										<span class="txt">Policy</span>
+										<span class="sw">
+											<input type="checkbox" data-radio="graph" data-toggle="switch" name="policy" />
+										</span>
+									</li>
+									<li>
+										<span class="txt">Number</span>
+										<span class="sw">
+											<input type="checkbox" data-toggle="switch" name="step" />
+										</span>
+									</li>
+									<li>
+										<span class="txt">Area</span>
+										<span class="sw">
+											<input type="checkbox" data-radio="graph" data-toggle="switch" name="Territory" />
+										</span>
+									</li>
+									<li>
+										<span class="txt">Following Steps</span>
+										<span class="sw">
+											<input type="checkbox" data-radio="graph" data-toggle="switch" name="nextSteps" />
+										</span>
+									</li>
+								</ul>
+							</div>
+							<div class="boardController" ng-hide="computer||userSe.selfGame">
+								<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+									<button class="btn btn-default" data-toggle="tooltip" title="第一手">
+										<img src="img/p1.png" class="widthest" ng-click="boardCon(0)" />
+									</button>
+								</div>
+								<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+									<button  class="btn btn-default" data-toggle="tooltip" title="后退4手">
+										<img src="img/p2.png" class="widthest" ng-click="boardCon(positionNow-4)" />
+									</button>
+								</div>
+								<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+									<button class="btn btn-default" data-toggle="tooltip" title="上一手">
+										<img src="img/p3.png" class="widthest" ng-click="boardCon(positionNow-1)" />
+									</button>
+								</div>
+								<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+									<button class="btn btn-default" data-toggle="tooltip" title="下一手">
+										<img src="img/p4.png" class="widthest" ng-click="boardCon(positionNow+1)" />
+									</button>
+								</div>
+								<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+									<button class="btn btn-default" data-toggle="tooltip" title="前进4手">
+										<img src="img/p5.png" class="widthest" ng-click="boardCon(positionNow+4)" />
+									</button>
+								</div>
+								<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 item">
+									<button class="btn btn-default" data-toggle="tooltip" title="最后一手">
+										<img src="img/p6.png" class="widthest" ng-click="boardCon(cache.length-1)" />
+									</button>
+								</div>
+								<div class="goStep form-inline col-lg-12 col-md-12">
+									<input type="number" ng-model="goStep" class="form-control" />
+									<button class="btn btn-default" ng-click="boardCon(goStep-1)">GO</button>
+								</div>
+							</div>
+							<div class="undo" ng-show="computer&&!userSe.selfGame">
+								<div class="col-lg-4 col-md-4"></div>
+								<div class="col-lg-4 col-md-4">
+									<button class="btn btn-danger" ng-click="undo()">
+										<img src="img/p11.png" class="widthest" alt="" />
+									</button>
+								</div>
+								<div class="col-lg-4 col-md-4"></div>
+							</div>
+						</div>
+						<div class="gameInfo" ng-style="resultCss.contentCss" ng-show="resultCss.optionCss">
+							<div class="txt">
+								<div class="publicTxt">
+									<div class="col-lg-4 clearpadding">公气：<span ng-bind="gameInfo.publicNum"></span></div>
+									<div class="col-lg-8 clearpadding">
+										<div class="col-lg-3 clearpadding">贴目：</div>
+										<div class="col-lg-9 clearpadding">
+											<div class="infoDis" ng-hide="handi.active">
+												<span ng-bind="handi.num"></span>
+												<span class="text-primary modifyBtn" ng-click="modifyHandi()">修改</span>
+												<span class="notice text-muted">(中国规则)</span>
+											</div>
+											<div class="infoDis" ng-hide="handi.active">
+												<span>6.5</span>
+												<span class="text-primary modifyBtn" style="visibility:hidden;">修改</span>
+												<span class="notice text-muted">(日本规则)</span>
+											</div>
+											<div class="handiModify" ng-show="handi.active">
+												<input id="handiInput" ng-blur="handiEffect(true)" type="number" class="form-control" style="height:20px;" ng-model="handi.num" />
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="infoVess">
+									<div class="blackInfo col-lg-6">
+										<h4 class="item_title">黑方：</h4>
+										<ul class="info">
+											<li>子数：<span ng-bind="gameInfo.color1"></span></li>
+											<li>占领气：<span ng-bind="gameInfo.area1"></span></li>
+											<li>死子：<span ng-bind="gameInfo.death1"></span></li>
+											<li>总共：<span ng-bind="gameInfo.color1+gameInfo.area1+gameInfo.publicNum/2"></span></li>
+										</ul>
+									</div>
+									<div class="whiteInfo col-lg-6">
+										<h4 class="item_title">白方：</h4>
+										<ul class="info">
+											<li>子数：<span ng-bind="gameInfo.color2"></span></li>
+											<li>占领气：<span ng-bind="gameInfo.area2"></span></li>
+											<li>死子：<span ng-bind="gameInfo.death2"></span></li>
+											<li>总共：<span ng-bind="gameInfo.color2+gameInfo.area2+gameInfo.publicNum/2"></span></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="result">
+								<div class="ChineseRule col-lg-6">
+									<h4>中国规则：</h4>
+									<div class="whiteWin" ng-if="gameInfo.result.Chinese.wWin+(handi.num/2)>0">
+										白胜：<span ng-bind="gameInfo.result.Chinese.wWin+(handi.num/2)"></span>子
+									</div>
+									<div class="blackWin" ng-if="gameInfo.result.Chinese.bWin-(handi.num/2)>0">
+										黑胜：<span ng-bind="gameInfo.result.Chinese.bWin-(handi.num/2)"></span>子
+									</div>
+									<div ng-if="gameInfo.result.Chinese.bWin-(handi.num/2)==0">平局</div>
+								</div>
+								<div class="JapaneseRule col-lg-6">
+									<h4>日本规则：</h4>
+									<div class="whiteWin" ng-if="gameInfo.result.Japanese.wWin>=0">
+										白胜：<span ng-bind="gameInfo.result.Japanese.wWin"></span>目
+									</div>
+									<div class="blackWin" ng-if="gameInfo.result.Japanese.bWin>0">
+										黑胜：<span ng-bind="gameInfo.result.Japanese.bWin"></span>目
+									</div>
+									<div ng-if="gameInfo.result.Japanese.bWin==0">平局</div>
+								</div>
+							</div>
+							<div class="resultIntro">
+								<p class="text-primary">请点击左侧棋盘内要去掉的死子，右侧数据会同步更新</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="colorSelect" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<h4 class="modal-title title" id="myModalLabel">
+						<span>请选择一枚棋子</span>
+						<li class="notice text-primary">如未选择任何一方则您可以同时控制黑白棋子</li>
+					</h4>
+					<div class="modal-body">
+						<div class="select" ng-hide="loadingTxt">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+								<div class="selectB" ng-click="userSe.b=!userSe.b">
+									<img src="img/p8.png" ng-show="userSe.b" class="widthest" />
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+								<div class="selectW" ng-click="userSe.w=!userSe.w">
+									<img src="img/p8.png" ng-show="userSe.w" class="widthest" />
+								</div>
+							</div>
+						</div>
+						<div class="txt" ng-bind="loadingTxt" ng-show="loadingTxt"></div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-default" ng-click="selfGame()">观看电脑对弈</button>
+						<button class="btn btn-primary" ng-click="select()">确认</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="txt text-danger text_center" ng-bind="loadingTxt" ng-show="loadingTxt"></div>
+						<div class="waiting text_center" ng-hide="loadingTxt">Waiting
+							<div class="points">
+								<div class="item" style="left:0px;" ng-show="loadWait>=1"></div>
+								<div class="item" style="left:10px;" ng-show="loadWait>=2"></div>
+								<div class="item" style="left:20px;" ng-show="loadWait>=3"></div>
+								<div class="item" style="left:30px;" ng-show="loadWait>=4"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="js/jquery-3.0.0.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.js"></script>
+	<script type="text/javascript" src="js/bootstrapSwitch.js"></script>
+	<script type="text/javascript" src="js/angular.js"></script>
+	<script type="text/javascript" src="js/demo.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/config.js"></script>
+</html>

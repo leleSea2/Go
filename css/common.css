@@ -1,0 +1,63 @@
+*{    font-family: arial, "Microsoft YaHei", "\5fae\8f6f\96c5\9ed1";margin:0px;padding:0px;}
+.row{padding:0px 15px;}
+a{text-decoration:none !important;color:#333;}
+html, body{width:100%;height:100%;}
+html{font-size:14px;}
+li{list-style: none;}
+ul{margin:0px;}
+.fontsize16{ font-size:16px; }
+.fontsize14{ font-size:14px;  }
+.hidden{display: none !important;}
+.red_set{color:#f83838 !important;}
+.dgray_set{color:#999 !important;}
+.lgray_set{color:#ddd !important;}
+.white_set{color:#fff;}
+.footcolor{color:#a2cfe7;}
+.text_center{text-align:center;}
+.text_left{text-align:left;}
+.text_right{text-align:right;}
+.absolute{position:absolute !important;}
+.relative{position:relative;}
+.img_control{display:inline-block;}
+.img_control img{width:100%;height:100%;}
+.three_img1{position:absolute;right:0px;top:0px;}
+.three_img2{position:absolute;right:0px;bottom:0px;}
+.inline-block{display: inline-block;}
+.inline_block{display: inline-block;}
+.vertical_top{vertical-align: top;}
+.vertical_middle{vertical-align:middle;}
+.vertical_bottom{vertical-align:bottom;}
+.delete_color{color:#3B5998 !important;}
+.backbtn{left:10px;}
+.show_bottom{padding-bottom:60px;}
+.cycle{border-radius:50%;overflow:hidden;}
+.mui-badge-danger{background: #f83838;}
+.widthest{width:100%;}
+.heightest{height:100%;}
+.pointer{cursor:pointer;}
+.dis_none{display:none;}
+.loadingvess{background:rgba(0,0,0,.3);opacity:1;position:absolute;top:0px;left:0px;z-index: 2;}
+.clearmargin{margin:0px !important;}
+.clearpadding{padding:0px !important;}
+.hidepoint{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}
+.timeshow{color:#BDBDBD !important;}
+.marginTop20{margin-top:20px;}
+.marginTop50{margin-top:50px;}
+.marginTBtm50{margin-bottom:50px;}
+.bcgwhite{background:#fff;}
+.padlr10{padding:0px 10px}
+.padtb20{padding:20px 0px}
+.padbtm20{padding-bottom:20px;}
+.rsaquo{font-size:23px;}
+input{font-family:"microsoft yahei" !important;}
+.smallfont{font-size:12px;}
+.boxsizinginit{box-sizing:initial !important;}
+.sortDis{padding-top:20px;/*padding-bottom:70px;*/}
+.fontbold{font-weight:bold;}
+.grayBor{border:1px solid #ddd}
+.clearTrans{overflow:hidden;}
+.block_center{margin:0px auto;}
+
+/*遮罩层*/
+.MASKING{position:fixed;top:0px;left:0px;width:100%;height:100%;background:rgba(72,72,74,0.5);display:none;z-index:15;}
+.MASKING .Wtd{vertical-align:middle;text-align:center;}
